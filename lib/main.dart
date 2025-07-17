@@ -4,6 +4,8 @@ import 'package:flutter_web_plugins/url_strategy.dart';
 import 'package:csv/csv.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:im_animations/im_animations.dart';
+import 'package:lottie/lottie.dart';
 
 void main() {
   usePathUrlStrategy();
@@ -16,11 +18,13 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Scrappy Web',
       theme: ThemeData(
         primaryColor: const Color(0xffD3452E),
         appBarTheme: AppBarTheme(color: const Color(0xffD3452E)),
       ),
+
       home: const MyHomePage(title: "Scrappy"),
     );
   }
@@ -63,9 +67,9 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Future<void> _scrapeData(String url) async {
     if (!_isValidUrl(url)) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("❌ Not a valid link")),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text("❌ Not a valid link")));
       return;
     }
 
@@ -112,9 +116,12 @@ class _MyHomePageState extends State<MyHomePage> {
 
   bool _isValidUrl(String url) {
     final uri = Uri.tryParse(url);
-    return uri != null && uri.hasScheme && (uri.isAbsolute) &&
+    return uri != null &&
+        uri.hasScheme &&
+        (uri.isAbsolute) &&
         (uri.scheme == 'http' || uri.scheme == 'https');
   }
+
   void _downloadCSV() {
     if (_csvRows == null || _csvRows!.isEmpty) return;
 
@@ -137,136 +144,165 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xffD3452E),
-      appBar: AppBar(
-        foregroundColor: Colors.white,
-        title: Text(widget.title, style: TextStyle(color: Colors.white)),
-        backgroundColor: Colors.black,
-      ),
       body: Center(
-        child: Container(
-          padding: const EdgeInsets.all(20.0),
-          constraints: const BoxConstraints(maxWidth: 800),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+        child: Column(
+          children: [
+            Image.asset("scrappy_logo.png", height: 300),
+            Container(
+              padding: const EdgeInsets.all(20.0),
+              constraints: const BoxConstraints(maxWidth: 800),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  const Text(
+                    'Enter the URL to scrape the data:',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Container(
+                    height: 60,
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.white),
+                    ),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: TextFormField(
+                            controller: controller,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w200,
+                            ),
+                            onEditingComplete: () {
+                              setState(() {
+                                _isSuccess = false;
+                              });
+                              print("filed submitted::");
+                            },
+                            onFieldSubmitted: (value) {
+                              print("filed submitted::");
+                            },
+
+                            decoration: const InputDecoration(
+                              hintText: "Enter URL",
+                              hintStyle: TextStyle(
+                                fontSize: 12,
+                                color: Colors.white,
+                              ),
+                              contentPadding: EdgeInsets.symmetric(
+                                horizontal: 24,
+                              ),
+                              border: InputBorder.none,
+                            ),
+                          ),
+                        ),
+                        ElevatedButton(
+                          style: ButtonStyle(
+                            fixedSize: WidgetStateProperty.all(
+                              const Size.fromHeight(60),
+                            ),
+                            backgroundColor: WidgetStateProperty.all(
+                              Colors.white,
+                            ),
+                            shape: WidgetStateProperty.all(
+                              RoundedRectangleBorder(
+                                borderRadius: BorderRadius.zero,
+                              ),
+                            ),
+                          ),
+                          onPressed: _isLoading
+                              ? null
+                              : _isSuccess
+                              ? () {
+                                  setState(() {
+                                    controller.clear();
+                                    _isSuccess = false;
+                                    _isLoading = false;
+                                  });
+                                }
+                              : () => _scrapeData(controller.text.trim()),
+                          child: _isLoading
+                              ? const Padding(
+                                  padding: EdgeInsets.all(8.0),
+                                  child: SizedBox(
+                                    height: 20,
+                                    width: 20,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      color: Colors.deepOrange,
+                                    ),
+                                  ),
+                                )
+                              : Text(
+                                  _isSuccess ? "Clear" : "Start Scraping",
+                                  style: TextStyle(
+                                    color: Color(0xffD3452E),
+                                    fontSize: 15,
+                                  ),
+                                ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  if (_isSuccess)
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text(
+                          '✅ Data scraped successfully!',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        ElevatedButton.icon(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.green,
+                          ),
+                          icon: const Icon(Icons.download, color: Colors.white),
+                          label: const Text(
+                            'Download Data',
+                            style: TextStyle(fontSize: 16, color: Colors.white),
+                          ),
+                          onPressed: _downloadCSV,
+                        ),
+                      ],
+                    ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+      bottomNavigationBar: Container(
+        height: kBottomNavigationBarHeight,
+        padding: EdgeInsets.symmetric(horizontal: 10),
+        color: Colors.black,
+        child: Center(
+          child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              const Text(
-                'Enter the URL to scrape the data:',
+            children: [
+              Text(
+                'Version 1.0.0 - More features coming soon!',
                 style: TextStyle(
                   color: Colors.white,
-                  fontSize: 18,
+                  fontSize: 14,
                   fontWeight: FontWeight.w500,
                 ),
               ),
-              const SizedBox(height: 12),
-              Container(
-                height: 60,
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.white),
-                ),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: TextFormField(
-                        controller: controller,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w200,
-                        ),
-                        onEditingComplete: () {
-                          setState(() {
-                            _isSuccess = false;
-                          });
-                          print("filed submitted::");
-                        },
-                        onFieldSubmitted: (value) {
-                          print("filed submitted::");
-                        },
-
-                        decoration: const InputDecoration(
-                          hintText: "Enter URL",
-                          hintStyle: TextStyle(
-                            fontSize: 12,
-                            color: Colors.white,
-                          ),
-                          contentPadding: EdgeInsets.symmetric(horizontal: 24),
-                          border: InputBorder.none,
-                        ),
-                      ),
-                    ),
-                    ElevatedButton(
-                      style: ButtonStyle(
-                        fixedSize: WidgetStateProperty.all(
-                          const Size.fromHeight(60),
-                        ),
-                        backgroundColor: WidgetStateProperty.all(Colors.white),
-                        shape: WidgetStateProperty.all(
-                          RoundedRectangleBorder(
-                            borderRadius: BorderRadius.zero,
-                          ),
-                        ),
-                      ),
-                      onPressed: _isLoading
-                          ? null
-                          : _isSuccess
-                          ? () {
-                              setState(() {
-                                controller.clear();
-                                _isSuccess = false;
-                                _isLoading = false;
-                              });
-                            }
-                          : () => _scrapeData(controller.text.trim()),
-                      child: _isLoading
-                          ? const Padding(
-                              padding: EdgeInsets.all(8.0),
-                              child: SizedBox(
-                                height: 20,
-                                width: 20,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                  color: Colors.deepOrange,
-                                ),
-                              ),
-                            )
-                          : Text(
-                              _isSuccess ? "Clear" : "Start Scraping",
-                              style: TextStyle(
-                                color: Color(0xffD3452E),
-                                fontSize: 15,
-                              ),
-                            ),
-                    ),
-                  ],
-                ),
+              SizedBox(width: 12),
+              HeartBeat(
+                beatsPerMinute: 60,
+                child: Icon(Icons.favorite, color: Colors.red, size: 20),
               ),
-              const SizedBox(height: 20),
-              if (_isSuccess)
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text(
-                      '✅ Data scraped successfully!',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                    ElevatedButton.icon(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.green,
-                      ),
-                      icon: const Icon(Icons.download, color: Colors.white),
-                      label: const Text(
-                        'Download Data',
-                        style: TextStyle(fontSize: 16, color: Colors.white),
-                      ),
-                      onPressed: _downloadCSV,
-                    ),
-                  ],
-                ),
             ],
           ),
         ),
