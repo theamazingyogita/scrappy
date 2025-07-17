@@ -13,7 +13,10 @@ Scrappy is a lightweight web scraper built using **Flutter Web** and **Node.js/D
 
 ## 📸 Screenshots
 
-> Add screenshots here once you have some! (Use `![screenshot](path/to/img.png)`)
+> <img width="1470" height="956" alt="Screensho<img width="1470" height="956" alt="Screenshot 2025-07-17 at 5 50 14 PM" src="https://github.com/user-attachments/assets/78df470c-30df-4898-95c9-527f953bd869" />
+
+> <img width="1470" height="956" alt="Screenshot 2025-07-17 at 5 50 14 PM" src="https://github.com/user-attachments/assets/6d7dc50c-766b-4ace-b0af-998b8cf58f3a" />
+
 
 ## 🛠️ Tech Stack
 
