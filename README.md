@@ -1,16 +1,39 @@
-# scrappy
+# 🕷️ Scrappy
 
-A new Flutter project.
+Scrappy is a lightweight web scraper built using **Flutter Web** and **Node.js/Dart**. It offers a clean, user-friendly interface to fetch and display structured web data in real time.
 
-## Getting Started
+## 🚀 Features
 
-This project is a starting point for a Flutter application.
+- 🌐 Scrapes live data from websites
+- 🧠 Built with Dart & Node.js backend
+- 🖥️ Flutter Web frontend with responsive UI
+- 🔎 Customizable selectors for scraping
+- 📤 Displays and exports scraped results
+- 📦 Optimized for GitHub Pages deployment
 
-A few resources to get you started if this is your first Flutter project:
+## 📸 Screenshots
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+> Add screenshots here once you have some! (Use `![screenshot](path/to/img.png)`)
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## 🛠️ Tech Stack
+
+- **Frontend:** Flutter Web
+- **Backend (optional):** Node.js / Dart
+- **Deployment:** GitHub Pages
+- **Languages:** Dart, JavaScript, HTML
+
+## 🧰 Setup & Run
+
+### 🔧 Prerequisites
+
+- [Flutter SDK](https://flutter.dev/docs/get-started/install)
+- Node.js (for backend scraping if used)
+- Dart (if using Dart server scraping logic)
+
+### 🚚 Installation
+
+```bash
+git clone https://github.com/yogitaagrawal/scrappy.git
+cd scrappy
+flutter pub get
+flutter build web
