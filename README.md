@@ -30,8 +30,8 @@ Scrappy is a lightweight web scraper built using **Flutter Web** and **Node.js/D
 ### 🔧 Prerequisites
 
 - [Flutter SDK](https://flutter.dev/docs/get-started/install)
-- Node.js (for backend scraping if used)
-- Dart (if using Dart server scraping logic)
+- Node.js 
+- Dart
 
 ### 🚚 Installation
 
