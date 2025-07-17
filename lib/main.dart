@@ -44,10 +44,31 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     controller = TextEditingController();
+    controller.addListener(() {
+      if (controller.text.isEmpty && _isSuccess) {
+        setState(() {
+          _isSuccess = false;
+          _csvRows = null;
+        });
+      }
+    });
     super.initState();
   }
 
+  @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
+  }
+
   Future<void> _scrapeData(String url) async {
+    if (!_isValidUrl(url)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("❌ Not a valid link")),
+      );
+      return;
+    }
+
     setState(() {
       _isLoading = true;
       _isSuccess = false;
@@ -89,6 +110,11 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
+  bool _isValidUrl(String url) {
+    final uri = Uri.tryParse(url);
+    return uri != null && uri.hasScheme && (uri.isAbsolute) &&
+        (uri.scheme == 'http' || uri.scheme == 'https');
+  }
   void _downloadCSV() {
     if (_csvRows == null || _csvRows!.isEmpty) return;
 
@@ -148,6 +174,16 @@ class _MyHomePageState extends State<MyHomePage> {
                           fontSize: 16,
                           fontWeight: FontWeight.w200,
                         ),
+                        onEditingComplete: () {
+                          setState(() {
+                            _isSuccess = false;
+                          });
+                          print("filed submitted::");
+                        },
+                        onFieldSubmitted: (value) {
+                          print("filed submitted::");
+                        },
+
                         decoration: const InputDecoration(
                           hintText: "Enter URL",
                           hintStyle: TextStyle(
@@ -173,6 +209,14 @@ class _MyHomePageState extends State<MyHomePage> {
                       ),
                       onPressed: _isLoading
                           ? null
+                          : _isSuccess
+                          ? () {
+                              setState(() {
+                                controller.clear();
+                                _isSuccess = false;
+                                _isLoading = false;
+                              });
+                            }
                           : () => _scrapeData(controller.text.trim()),
                       child: _isLoading
                           ? const Padding(
@@ -186,8 +230,8 @@ class _MyHomePageState extends State<MyHomePage> {
                                 ),
                               ),
                             )
-                          : const Text(
-                              "Start Scraping",
+                          : Text(
+                              _isSuccess ? "Clear" : "Start Scraping",
                               style: TextStyle(
                                 color: Color(0xffD3452E),
                                 fontSize: 15,
